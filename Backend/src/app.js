@@ -9,8 +9,25 @@ const frontendURL = process.env.FRONTEND_URL || "https://ai-interview-help.verce
 
 app.use(express.json())
 app.use(cookieParser())
+
+// Dynamic CORS - allow Vercel URLs + localhost
 app.use(cors({
-    origin: [frontendURL, "https://ai-interview-help.vercel.app", "http://localhost:5173"],
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        // Allow localhost
+        if (origin.includes("localhost")) return callback(null, true);
+        
+        // Allow all Vercel URLs
+        if (origin.includes("vercel.app")) return callback(null, true);
+        
+        // Allow Render URLs
+        if (origin.includes("onrender.com")) return callback(null, true);
+        
+        // Block other origins
+        callback(new Error("Not allowed by CORS"));
+    },
     credentials: true
 }))
 
