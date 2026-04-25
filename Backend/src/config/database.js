@@ -5,12 +5,15 @@ const mongoose = require("mongoose")
 async function connectToDB() {
 
     try {
-        await mongoose.connect(process.env.MONGO_URI)
+        await mongoose.connect(process.env.MONGO_URI, {
+            serverSelectionTimeoutMS: 5000,
+            dnsSrvOrder: false
+        })
 
         console.log("Connected to Database")
     }
     catch (err) {
-        console.log(err)
+        console.log("Database connection error:", err.message)
     }
 }
 
