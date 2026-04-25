@@ -5,12 +5,12 @@ const cors = require("cors")
 const app = express()
 
 // Get frontend URL from environment or use default
-const frontendURL = process.env.FRONTEND_URL || "http://localhost:5173"
+const frontendURL = process.env.FRONTEND_URL || "https://ai-interview-help.onrender.com/"
 
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-    origin: [frontendURL, "http://localhost:5173"],
+    origin: [frontendURL, "https://ai-interview-help.onrender.com"],
     credentials: true
 }))
 
