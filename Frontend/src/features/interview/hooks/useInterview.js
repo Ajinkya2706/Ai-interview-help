@@ -1,5 +1,5 @@
-import { getAllInterviewReports, generateInterviewReport, getInterviewReportById, generateResumePdf } from "../services/interview.api"
-import { useContext, useEffect } from "react"
+import { getAllInterviewReports, generateInterviewReport, getInterviewReportById, generateResumePdf, generateMoreQuestionsApi } from "../services/interview.api"
+import { useContext, useEffect, useState } from "react"
 import { InterviewContext } from "../interview.context"
 import { useParams } from "react-router"
 
@@ -14,6 +14,7 @@ export const useInterview = () => {
     }
 
     const { loading, setLoading, report, setReport, reports, setReports } = context
+    const [loadingMore, setLoadingMore] = useState(false)
 
     const generateReport = async ({ jobDescription, selfDescription, resumeFile }) => {
         setLoading(true)
@@ -78,6 +79,28 @@ export const useInterview = () => {
         }
     }
 
+    const loadMoreQuestions = async (interviewReportId, type) => {
+        setLoadingMore(true)
+        try {
+            const response = await generateMoreQuestionsApi({ interviewReportId, type })
+            const newQuestions = response.newQuestions
+
+            // Merge new questions into the existing report state
+            setReport(prev => {
+                if (!prev) return prev
+                const field = type === "technical" ? "technicalQuestions" : "behavioralQuestions"
+                return {
+                    ...prev,
+                    [field]: [...prev[field], ...newQuestions]
+                }
+            })
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoadingMore(false)
+        }
+    }
+
     useEffect(() => {
         if (interviewId) {
             getReportById(interviewId)
@@ -86,6 +109,6 @@ export const useInterview = () => {
         }
     }, [ interviewId ])
 
-    return { loading, report, reports, generateReport, getReportById, getReports, getResumePdf }
+    return { loading, loadingMore, report, reports, generateReport, getReportById, getReports, getResumePdf, loadMoreQuestions }
 
 }

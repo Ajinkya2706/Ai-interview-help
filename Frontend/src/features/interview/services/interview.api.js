@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:3000",
+    baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
     withCredentials: true,
 })
 
@@ -54,6 +54,16 @@ export const generateResumePdf = async ({ interviewReportId }) => {
     const response = await api.post(`/api/interview/resume/pdf/${interviewReportId}`, null, {
         responseType: "blob"
     })
+
+    return response.data
+}
+
+
+/**
+ * @description Service to generate more questions for an existing interview report.
+ */
+export const generateMoreQuestionsApi = async ({ interviewReportId, type }) => {
+    const response = await api.post(`/api/interview/more-questions/${interviewReportId}`, { type })
 
     return response.data
 }

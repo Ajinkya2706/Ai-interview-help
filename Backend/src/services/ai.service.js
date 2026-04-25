@@ -113,4 +113,43 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
 
 }
 
-module.exports = { generateInterviewReport, generateResumePdf }
+
+const moreQuestionsSchema = z.object({
+    questions: z.array(z.object({
+        question: z.string().describe("A unique interview question that has NOT been asked before"),
+        intention: z.string().describe("The intention of the interviewer behind asking this question"),
+        answer: z.string().describe("How to answer this question, what points to cover, what approach to take etc.")
+    })).describe("Array of 5 new unique questions that are different from the existing ones")
+})
+
+async function generateMoreQuestions({ resume, selfDescription, jobDescription, existingQuestions, type }) {
+
+    const existingList = existingQuestions
+        .map((q, i) => `${i + 1}. ${q.question}`)
+        .join("\n")
+
+    const prompt = `You are an expert interviewer. Generate exactly 5 NEW ${type} interview questions for a candidate.
+
+Candidate Details:
+- Resume: ${resume}
+- Self Description: ${selfDescription}
+- Job Description: ${jobDescription}
+
+IMPORTANT: The following questions have ALREADY been asked. You MUST NOT repeat any of them or ask anything similar:
+${existingList}
+
+Generate 5 completely NEW and UNIQUE ${type} questions that cover DIFFERENT topics, skills, or scenarios than the ones listed above. Each question should be insightful and relevant to the job description.`
+
+    const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: zodToJsonSchema(moreQuestionsSchema),
+        }
+    })
+
+    return JSON.parse(response.text)
+}
+
+module.exports = { generateInterviewReport, generateResumePdf, generateMoreQuestions }

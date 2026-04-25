@@ -477,3 +477,91 @@ $severity-low: #3fb950;
         border-color: rgba($severity-low, 0.25);
     }
 }
+
+// ── Load More Button ──────────────────────────────────────────────────────────
+.load-more-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+    margin-top: 1.25rem;
+    padding: 0.85rem 1.5rem;
+    background: linear-gradient(135deg, rgba($accent, 0.15), rgba($accent, 0.05));
+    border: 1px dashed rgba($accent, 0.35);
+    border-radius: 0.6rem;
+    color: $accent;
+    font-family: $font-stack;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba($accent, 0.08), transparent);
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+
+    &:hover:not(:disabled) {
+        background: linear-gradient(135deg, rgba($accent, 0.22), rgba($accent, 0.1));
+        border-color: rgba($accent, 0.5);
+        box-shadow: 0 0 20px rgba($accent, 0.12), 0 4px 12px rgba(0, 0, 0, 0.2);
+        transform: translateY(-1px);
+
+        &::before {
+            opacity: 1;
+        }
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    &__icon {
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+    }
+
+    &:hover:not(:disabled) &__icon {
+        transform: rotate(15deg) scale(1.15);
+    }
+
+    // Loading state
+    &--loading {
+        cursor: not-allowed;
+        opacity: 0.85;
+        border-style: solid;
+        animation: loadMorePulse 1.8s ease-in-out infinite;
+    }
+
+    &__spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba($accent, 0.25);
+        border-top-color: $accent;
+        border-radius: 50%;
+        animation: loadMoreSpin 0.7s linear infinite;
+        flex-shrink: 0;
+    }
+}
+
+@keyframes loadMoreSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes loadMorePulse {
+    0%, 100% { 
+        opacity: 0.75;
+        border-color: rgba($accent, 0.25); 
+    }
+    50% { 
+        opacity: 1;
+        border-color: rgba($accent, 0.5); 
+    }
+}

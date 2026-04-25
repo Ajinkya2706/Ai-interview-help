@@ -38,5 +38,13 @@ interviewRouter.get("/", authMiddleware.authUser, interviewController.getAllInte
 interviewRouter.post("/resume/pdf/:interviewReportId", authMiddleware.authUser, interviewController.generateResumePdfController)
 
 
+/**
+ * @route POST /api/interview/more-questions/:interviewReportId
+ * @description generate more questions (technical or behavioral) for an existing interview report.
+ * @access private
+ */
+interviewRouter.post("/more-questions/:interviewReportId", authMiddleware.authUser, interviewController.generateMoreQuestionsController)
+
+
 
 module.exports = interviewRouter
